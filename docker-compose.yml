@@ -1,0 +1,33 @@
+services:
+  ppe-be:
+    build: ./ppe-be
+    container_name: ppe-be
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./ppe-be:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: always
+    networks:
+      - ppe-network
+
+  ppe-recognition:
+    build: ./ppe-recognition
+    container_name: ppe-recognition
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./ppe-recognition:/app
+      - /app/node_modules
+    depends_on:
+      - ppe-be
+    environment:
+      - VITE_API_URL=http://ppe-be:8000
+    restart: always
+    networks:
+      - ppe-network
+
+networks:
+  ppe-network:
+    driver: bridge
